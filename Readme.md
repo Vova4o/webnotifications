@@ -28,13 +28,18 @@ config := webnotifications.NotifierConfig{
     SMTPHost:     "smtp.example.com",
     SMTPPort:     587,
     SMTPUsername: "your-email@example.com",
-    SMTPPassword: "your-email-password",
+    SMTPPassword: "your-email-password", // make sure to check your email provider's security settings
+    // some email providers require you to use app passwords instead of your account password
     FromEmail:    "your-email@example.com",
     ToEmail:      "recipient@example.com",
 }
 ```
 
 ### Creating and Using MultiNotifier
+
+Make sure to pass the configuration and the notifier type(s) you want to use,
+e.g., `webnotifications.Telegram`, `webnotifications.Email`, or both.
+
 ```go
 notifier := webnotifications.NewMultiNotifier(config, webnotifications.Telegram, webnotifications.Email)
 
