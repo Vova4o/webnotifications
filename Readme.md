@@ -3,26 +3,37 @@
 WebNotifications is a Go package that provides a flexible notification system supporting multiple notification channels, including Telegram and Email. It allows sending messages through various channels by configuring valid notifier settings.
 
 ## Features
+
 - Supports Telegram notifications
 - Supports Email notifications via SMTP
 - Allows configuring multiple notifiers at once
 - Validates configuration before adding a notifier
 
 ## Installation
+
 To install WebNotifications, use:
+
 ```sh
-go get github.com/yourusername/webnotifications
+go get github.com/vova4o/webnotifications
 ```
 
-## Usage
-### Importing the package
+## Importing
+
+To import WebNotifications in your Go project, use:
+
 ```go
-import "github.com/yourusername/webnotifications"
+import (
+    "github.com/vova4o/webnotifications"
+    "github.com/vova4o/webnotifications/models"
+)
 ```
 
-### Setting up NotifierConfig
+## Configuration
+
+To configure WebNotifications, create a `NotifierConfig` struct with the necessary settings:
+
 ```go
-config := webnotifications.NotifierConfig{
+config := models.NotifierConfig{
     TGAPIKey:    "your-telegram-bot-api-key",
     TGChannelID: "your-telegram-channel-id",
     SMTPHost:     "smtp.example.com",
@@ -35,22 +46,35 @@ config := webnotifications.NotifierConfig{
 }
 ```
 
-### Creating and Using MultiNotifier
+## Usage
 
-Make sure to pass the configuration and the notifier type(s) you want to use,
-e.g., `webnotifications.Telegram`, `webnotifications.Email`, or both.
+To use WebNotifications, create a new notifier and send notifications:
 
 ```go
-notifier := webnotifications.NewMultiNotifier(config, webnotifications.Telegram, webnotifications.Email)
+notifier := webnotifications.NewMultiNotifier(config, models.Telegram, models.Email)
 
+// Simple call
 err := notifier.Notify("Hello, this is a test notification!")
-if err != nil {
-    fmt.Println("Error sending notification:", err)
-}
+
+// Using with context and timeout
+ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+defer cancel()
+err := notifier.NotifyWithContext(ctx, "Hello with timeout!")
+```
+
+## Examples
+
+To run the examples, navigate to the `examples` directory and run the `main.go` file:
+
+```sh
+cd examples
+go run main.go
 ```
 
 ## Environment Variables (Optional)
-Instead of hardcoding credentials, consider using environment variables:
+
+Instead of hardcoding your configuration, you can use environment variables to set your notifier settings:
+
 ```sh
 export TG_API_KEY="your-telegram-bot-api-key"
 export TG_CHANNEL_ID="your-telegram-channel-id"
@@ -61,22 +85,18 @@ export SMTP_PASSWORD="your-email-password"
 export FROM_EMAIL="your-email@example.com"
 export TO_EMAIL="recipient@example.com"
 ```
-Then retrieve them in your Go code:
-```go
-import "os"
 
-config := webnotifications.NotifierConfig{
+To retrieve the environment variables in your Go code, use:
+
+```go
+config := models.NotifierConfig{
     TGAPIKey:    os.Getenv("TG_API_KEY"),
     TGChannelID: os.Getenv("TG_CHANNEL_ID"),
-    SMTPHost:     os.Getenv("SMTP_HOST"),
-    SMTPPort:     587,
+    SMTPHost:    os.Getenv("SMTP_HOST"),
+    SMTPPort:    os.Getenv("SMTP_PORT"),
     SMTPUsername: os.Getenv("SMTP_USERNAME"),
     SMTPPassword: os.Getenv("SMTP_PASSWORD"),
-    FromEmail:    os.Getenv("FROM_EMAIL"),
-    ToEmail:      os.Getenv("TO_EMAIL"),
+    FromEmail:   os.Getenv("FROM_EMAIL"),
+    ToEmail:     os.Getenv("TO_EMAIL"),
 }
 ```
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
